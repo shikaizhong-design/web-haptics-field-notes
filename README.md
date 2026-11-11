@@ -5,7 +5,7 @@ On the iPhone tested (Safari) there is no `navigator.vibrate`, and every switch 
 Ticks during a drag work with the finger-tracked switch technique documented by [haptick](https://github.com/jcruzfff/haptick): confirmed on a device with `touch-action: none`, not verified with `pan-y`.
 On Android, `navigator.vibrate(ms)` worked, including in WeChat's in-app browser on a vivo X300 Ultra. Check the phone's own vibration setting first: with it off the call still returns `true` and nothing plays. 18 ms is what we use.
 Also: hairline digits that lose their thin strokes on phone screens, with measured stroke widths.
-Data: `data/devices.json`, `data/thin-strokes.json`. Module: `src/haptics.js`. Test page: `demo/`. Device results from other phones are welcome as issues.
+Data: `data/devices.json`, `data/thin-strokes.json`. Module: `src/haptics.js`. Test page: `demo/` ([open it on a phone](https://shikaizhong-design.github.io/web-haptics-field-notes/demo/)). Device results from other phones are welcome as issues.
 
 ---
 
@@ -223,7 +223,9 @@ done.addEventListener('click', () => tick([80, 60, 80])); // 模式数组原样�
 
 ## 在自己的手机上跑测试页
 
-测试页是 `demo/index.html`，从 `../src/` 加载模块，所以静态服务器要从仓库根目录起：
+在线测试页（用手机打开）：<https://shikaizhong-design.github.io/web-haptics-field-notes/demo/>
+
+想自己部署的话：测试页是 `demo/index.html`，从 `../src/` 加载模块，所以静态服务器要从仓库根目录起：
 
 - GitHub Pages：在仓库设置里开启 Pages（从 `main` 分支根目录发布），然后在手机上打开 `https://<用户名>.github.io/<仓库名>/demo/`。
 - 本地：在仓库根目录运行 `python3 -m http.server 8000`，手机和电脑连同一个网络，打开 `http://<电脑的局域网地址>:8000/demo/`。
