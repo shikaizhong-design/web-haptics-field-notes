@@ -1,0 +1,20 @@
+/* The invisible native switch that takes the finger on iPhone (haptics.js). It fills its host; haptics.js gives a
+   static host position: relative. The finger must land on the switch, so it sits above the host's content. */
+.haptic-drag,
+.haptic-tap {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  -webkit-appearance: auto; /* in case a CSS reset sets appearance: none on inputs */
+  appearance: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* A tap switch leaves swipes to the page. (attachDragHaptics sets touch-action on its switch itself.) */
+.haptic-tap { touch-action: manipulation; }

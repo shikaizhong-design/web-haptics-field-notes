@@ -1,0 +1,36 @@
+{
+  "description": "Thinnest stroke of the digit 4 in several serif faces, measured because a hairline display cut lost its thin strokes on phone screens.",
+  "method": {
+    "glyph": "4",
+    "fontSizeCssPx": 84,
+    "renderer": "headless Chromium on macOS (not on the phones)",
+    "deviceScaleFactor": 3,
+    "measure": "rendered at 3x and scanned; the value is the smaller of the diagonal's width and the crossbar's thickness",
+    "unit": "CSS px"
+  },
+  "measurements": [
+    { "font": "Bodoni Moda", "axes": { "opsz": 96 }, "thinnestStrokeCssPx": 0.14 },
+    { "font": "Bodoni Moda", "axes": { "opsz": 28, "wght": 500 }, "thinnestStrokeCssPx": 0.63 },
+    { "font": "Bodoni Moda", "axes": { "opsz": 11, "wght": 500 }, "thinnestStrokeCssPx": 1.64 },
+    { "font": "Bodoni Moda", "axes": { "opsz": 11, "wght": 600 }, "thinnestStrokeCssPx": 1.64 },
+    { "font": "Playfair Display", "axes": { "wght": 500 }, "thinnestStrokeCssPx": 1.73 },
+    { "font": "DM Serif Display", "axes": { "wght": 400 }, "thinnestStrokeCssPx": 2.70 },
+    { "font": "Noto Serif SC", "axes": { "wght": 500 }, "thinnestStrokeCssPx": 2.86, "note": "digits" },
+    { "font": "Fraunces", "axes": { "opsz": 72, "wght": 500, "SOFT": 50 }, "thinnestStrokeCssPx": 3.80 },
+    { "font": "Libre Caslon Text", "axes": { "wght": 500 }, "thinnestStrokeCssPx": 5.07 }
+  ],
+  "at24px": {
+    "note": "Strokes scale with font size. Approximate values at 24 CSS px.",
+    "values": [
+      { "font": "Bodoni Moda", "axes": { "opsz": 11 }, "thinnestStrokeCssPx": 0.47 },
+      { "font": "Noto Serif SC", "axes": { "wght": 500 }, "thinnestStrokeCssPx": 0.82 },
+      { "font": "Libre Caslon Text", "axes": { "wght": 500 }, "thinnestStrokeCssPx": 1.45 }
+    ]
+  },
+  "onPhones": [
+    { "device": "vivo X300 Ultra", "font": "Bodoni Moda", "axes": { "opsz": 96 }, "fontSizeCssPx": "18-20", "observed": "the digits 4 and 7 read as 1" },
+    { "device": "iPhone", "font": "Bodoni Moda", "axes": { "opsz": 96 }, "fontSizeCssPx": 84, "theme": "light text on dark background", "observed": "the 4 lost its diagonal and crossbar" }
+  ],
+  "outcome": "The opsz-96 cut was replaced with DM Serif Display.",
+  "relatedGotcha": "With a Content-Security-Policy of default-src 'self' and no font-src, a font loaded from a data: URL is blocked."
+}

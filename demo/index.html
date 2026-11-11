@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>网页触感测试页 (Web haptics test page)</title>
+<link rel="stylesheet" href="../src/haptics.css">
+<style>
+  :root {
+    --bg: #f5f5f3;
+    --card: #ffffff;
+    --text: #1c1c1e;
+    --muted: #66666b;
+    --line: #d9d9d5;
+    --soft: #ececea;
+    --strong: #1c1c1e;
+    --on-strong: #ffffff;
+    --note-bg: #f1efe8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141415;
+      --card: #1f1f21;
+      --text: #ececee;
+      --muted: #9d9da3;
+      --line: #3a3a3e;
+      --soft: #2a2a2d;
+      --strong: #ececee;
+      --on-strong: #141415;
+      --note-bg: #26251f;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, -apple-system, "PingFang SC", "Noto Sans CJK SC", sans-serif; }
+  main { max-width: 640px; margin: 0 auto; padding: 16px 16px 96px; }
+  h1 { font-size: 22px; line-height: 1.3; margin: 8px 0 4px; }
+  h2 { font-size: 18px; margin: 32px 0 4px; }
+  h3 { font-size: 16px; margin: 0; font-weight: 600; }
+  p { margin: 6px 0; }
+  .en { color: var(--muted); font-weight: 400; }
+  .lead { color: var(--muted); font-size: 15px; }
+  .callout { background: var(--note-bg); border-radius: 10px; padding: 10px 12px; font-size: 15px; }
+  .env-line { font-size: 14px; color: var(--muted); }
+  .row { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin: 10px 0; }
+  .tag { display: inline-block; min-width: 28px; padding: 0 6px; margin-right: 6px; border-radius: 6px; background: var(--soft); text-align: center; font-variant-numeric: tabular-nums; }
+  .note { font-size: 14px; color: var(--muted); }
+  .act { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 10px 0 6px; }
+  button { font: inherit; color: var(--text); background: var(--soft); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; min-height: 44px; cursor: pointer; }
+  button:active { background: var(--line); }
+  button.is-on { background: var(--strong); color: var(--on-strong); border-color: var(--strong); }
+  .switch-label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; }
+  .switch-label input { transform: scale(1.4); margin: 0 6px; }
+  .verdict { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+  .verdict select { font: inherit; color: var(--text); background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
+  /* Row F: a number with a transparent real switch over it. */
+  .overlay-number { position: relative; display: grid; place-items: center; width: 120px; height: 72px; border: 1px dashed var(--line); border-radius: 10px; font-size: 36px; font-variant-numeric: tabular-nums; }
+  .overlay-number input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: .01; }
+  .tap-count { font-variant-numeric: tabular-nums; }
+  /* Drag pads: a ruler that follows the finger one to one. */
+  .pad { position: relative; display: flex; align-items: center; justify-content: space-between; height: 96px; padding: 0 16px; border: 1px solid var(--line); border-radius: 12px; user-select: none; -webkit-user-select: none; background-color: var(--soft); background-image: repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 28px); background-position: 50% 0; }
+  .pad-pos { font-size: 32px; font-variant-numeric: tabular-nums; min-width: 2ch; }
+  .pad-count { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .lengths { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+  .lengths button { min-width: 56px; padding: 8px 10px; }
+  .offscreen { position: fixed; left: -200px; top: 0; opacity: 0; pointer-events: none; }
+  dl { font-size: 14px; margin: 8px 0; }
+  dt { color: var(--muted); margin-top: 8px; }
+  dd { margin: 0; overflow-wrap: anywhere; font-family: ui-monospace, Menlo, monospace; }
+  #log { font: 13px/1.5 ui-monospace, Menlo, monospace; padding-left: 0; list-style: none; max-height: 320px; overflow: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--card); margin: 8px 0; }
+  #log li { padding: 4px 10px; border-bottom: 1px solid var(--soft); overflow-wrap: anywhere; }
+  #log:empty::before { content: "（暂无记录 / no entries yet）"; display: block; padding: 6px 10px; color: var(--muted); }
+  #report { width: 100%; min-height: 200px; font: 12px/1.45 ui-monospace, Menlo, monospace; color: var(--text); background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px; }
+  #last { position: fixed; left: 0; right: 0; bottom: 0; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: var(--strong); color: var(--on-strong); font: 13px/1.4 ui-monospace, Menlo, monospace; overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+<main>
+  <h1>网页触感测试页 <span class="en">(Web haptics test page)</span></h1>
+  <p class="lead">在手机上打开，逐行试一下，在每行的「你的结果」里选有没有震感，最后点页面底部的「复制结果」，贴到 issue 里。<span class="en">(Open on a phone, try each row, mark whether it ticked, then copy the report at the bottom into an issue.)</span></p>
+  <p class="env-line" id="env-line"></p>
+
+  <h2>iPhone：原生 switch <span class="en">(iOS: native switch)</span></h2>
+  <p class="note">iOS 没有 <code>navigator.vibrate</code>。下面每行是一种让 switch 发出系统触感的方式；「原测试」是 2026-11 在一台 iPhone（Safari，iOS 版本未记录）上的结果。字母沿用原测试页，结果里没有 E 行。<span class="en">(Reference results: one iPhone, Safari, iOS version not recorded.)</span></p>
+
+  <div class="row" data-row="A">
+    <h3><span class="tag">A</span>可见的原生 switch，用手指点 <span class="en">(visible switch, finger tap)</span></h3>
+    <p class="note">原测试：有震感 <span class="en">(ticked)</span></p>
+    <div class="act"><label class="switch-label"><input type="checkbox" switch id="a-switch">点这个开关 <span class="en">(tap the switch)</span></label></div>
+  </div>
+
+  <div class="row" data-row="B">
+    <h3><span class="tag">B</span>新建隐藏的 label + switch，按钮里 <code>label.click()</code>，然后移除 <span class="en">(fresh hidden switch, label.click() from a button, removed)</span></h3>
+    <p class="note">原测试：无 <span class="en">(silent)</span></p>
+    <div class="act"><button type="button" id="b-button">运行 B <span class="en">(run)</span></button></div>
+  </div>
+
+  <div class="row" data-row="C">
+    <h3><span class="tag">C</span>常驻屏幕外的 label + switch，脚本 click <span class="en">(persistent off-screen label + switch, clicked from script)</span></h3>
+    <p class="note">原测试：无 <span class="en">(silent)</span></p>
+    <div class="act"><button type="button" id="c-button">运行 C <span class="en">(run)</span></button></div>
+  </div>
+
+  <div class="row" data-row="D">
+    <h3><span class="tag">D</span>隐藏的 switch，<code>input.click()</code> <span class="en">(hidden switch, input.click())</span></h3>
+    <p class="note">原测试：无 <span class="en">(silent)</span></p>
+    <div class="act"><button type="button" id="d-button">运行 D <span class="en">(run)</span></button></div>
+  </div>
+
+  <div class="row" data-row="F">
+    <h3><span class="tag">F</span>透明的真实 switch（opacity .01）盖在数字上，用手指点 <span class="en">(transparent real switch over a number, finger tap)</span></h3>
+    <p class="note">原测试：有震感 <span class="en">(ticked)</span>。每点一次数字加一。<span class="en">(The number counts taps.)</span></p>
+    <div class="act"><div class="overlay-number"><span id="f-number">0</span><input type="checkbox" switch id="f-switch" aria-label="F"></div></div>
+  </div>
+
+  <div class="row" data-row="T">
+    <h3><span class="tag">T</span>用 <code>attachTapHaptics</code> 的按钮 <span class="en">(button using attachTapHaptics)</span></h3>
+    <p class="note">未在真机验证 <span class="en">(unverified on device)</span>。点一下，计数加一说明点击被转发到了按钮。<span class="en">(The count shows the tap reached the button.)</span></p>
+    <div class="act"><button type="button" id="t-button">点我 <span class="en">(tap)</span> · <span class="tap-count" id="t-count">0</span></button></div>
+  </div>
+
+  <div class="row" data-row="P1">
+    <h3><span class="tag">P1</span>拖动板：<code>touch-action: none</code> <span class="en">(drag pad)</span></h3>
+    <p class="note">左右拖动，每 28px 一步、震一次；轻点也应震一次。与真机确认过的数字拨盘设置相同。开始触摸后约 0.26 秒内不会震，手指离开后也不会震。<span class="en">(Same setting as the dial confirmed on device. No ticks in the first ~quarter-second or after lifting.)</span></p>
+    <div class="pad" id="pad-none"><span class="pad-pos">0</span><span class="pad-count">步数 (steps) 0</span></div>
+  </div>
+
+  <div class="row" data-row="P2">
+    <h3><span class="tag">P2</span>拖动板：<code>touch-action: pan-y</code> — 未在真机验证 <span class="en">(unverified on device)</span></h3>
+    <p class="note">左右拖动应每步震一次；上下滑动应滚动页面。<span class="en">(Sideways drags should tick; vertical swipes should scroll the page.)</span></p>
+    <div class="pad" id="pad-pany"><span class="pad-pos">0</span><span class="pad-count">步数 (steps) 0</span></div>
+  </div>
+
+  <h2>Android：Vibration API</h2>
+  <p class="callout">先确认手机自己的振动 / 触感反馈已打开（不在静音模式）。关掉时 <code>vibrate()</code> 照样返回 <code>true</code>，但不会振。<span class="en">(Check the phone's vibration setting first: with it off the call still returns true and nothing plays.)</span></p>
+
+  <div class="row" data-row="V18">
+    <h3><span class="tag">18</span>单次 18 ms <span class="en">(single pulse)</span></h3>
+    <div class="act"><button type="button" data-pattern="18">振 18 ms <span class="en">(vibrate)</span></button></div>
+  </div>
+  <div class="row" data-row="V60">
+    <h3><span class="tag">60</span>单次 60 ms <span class="en">(single pulse)</span></h3>
+    <div class="act"><button type="button" data-pattern="60">振 60 ms <span class="en">(vibrate)</span></button></div>
+  </div>
+  <div class="row" data-row="V400">
+    <h3><span class="tag">400</span>单次 400 ms <span class="en">(single pulse)</span></h3>
+    <div class="act"><button type="button" data-pattern="400">振 400 ms <span class="en">(vibrate)</span></button></div>
+  </div>
+  <div class="row" data-row="VPAT">
+    <h3><span class="tag">模式</span><code>[80, 60, 80, 60, 80]</code> <span class="en">(pattern)</span></h3>
+    <div class="act"><button type="button" data-pattern="80,60,80,60,80">振模式 <span class="en">(vibrate pattern)</span></button></div>
+  </div>
+
+  <div class="row" data-row="LEN">
+    <h3><span class="tag">长度</span>脉冲长度对比 <span class="en">(compare pulse lengths)</span></h3>
+    <p class="note">点一个长度会振一次并选中它；在下面的板上左右拖动，每 28px 用选中的长度振一次。最后停在你觉得最好的长度上。<span class="en">(Tap a length to play and select it; drag the pad to feel it per step. Leave your preferred length selected.)</span></p>
+    <div class="lengths" id="lengths" role="radiogroup" aria-label="脉冲长度 (pulse length)"></div>
+    <div class="pad" id="pad-pulse"><span class="pad-pos">0</span><span class="pad-count">步数 (steps) 0</span></div>
+  </div>
+
+  <h2>环境 <span class="en">(Environment)</span></h2>
+  <dl id="env"></dl>
+
+  <h2>记录 <span class="en">(Log)</span></h2>
+  <ol id="log"></ol>
+  <div class="act">
+    <button type="button" id="copy">复制结果 <span class="en">(copy report)</span></button>
+    <button type="button" id="clear">清空记录 <span class="en">(clear log)</span></button>
+  </div>
+  <textarea id="report" readonly hidden aria-label="结果 (report)"></textarea>
+</main>
+<div id="last" aria-live="polite">最近 (last): —</div>
+<script type="module" src="demo.js"></script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+{
+  "description": "Device results for haptic feedback on the mobile web, one record per device/browser combination tested. null means not recorded or not verified; it is never a guess. See README.md for the test rows.",
+  "values": {
+    "ticks": "a haptic was felt",
+    "silent": "nothing was felt",
+    "plays": "the vibration was felt",
+    "null": "not recorded or not verified"
+  },
+  "records": [
+    {
+      "model": "iPhone",
+      "os": "iOS",
+      "osVersion": null,
+      "browser": "Safari",
+      "date": "2026-11",
+      "results": {
+        "vibrationApi": false,
+        "switchRows": {
+          "A_visibleSwitchFingerTap": "ticks",
+          "B_freshHiddenSwitchLabelClickFromScriptThenRemoved": "silent",
+          "C_persistentOffscreenLabelSwitchClickedFromScript": "silent",
+          "D_hiddenSwitchInputClickFromScript": "silent",
+          "F_transparentSwitchOverNumberFingerTap": "ticks"
+        },
+        "dragSwitchTouchActionNone": "ticks",
+        "dragSwitchTouchActionNoneTap": "ticks",
+        "dragSwitchTouchActionPanY": null,
+        "attachTapHapticsHelper": null
+      },
+      "notes": "Exact model and iOS version not recorded; the phone was on a current iOS release in 2026-11. navigator.vibrate is undefined. Only a real finger on a real switch ticked; every script-initiated toggle was silent. The drag result is from a horizontal number dial with touch-action: none on the switch: one tick per step while dragging and one tick on a tap. touch-action: pan-y runs in code and in emulation but was not confirmed on a device. In-app browsers on iOS were not tested for the drag technique. Public reports (the READMEs of jcruzfff/haptick and tijnjh/ios-haptics) say script-toggled switch haptics were blocked in iOS 26.5; not checked across iOS versions here."
+    },
+    {
+      "model": "vivo X300 Ultra",
+      "os": "Android",
+      "osVersion": null,
+      "browser": "WeChat in-app browser",
+      "date": "2026-11",
+      "results": {
+        "vibrationApi": true,
+        "vibratePlays": "plays"
+      },
+      "notes": "navigator.vibrate(ms) worked inside WeChat's in-app browser."
+    },
+    {
+      "model": "vivo X300 Ultra",
+      "os": "Android",
+      "osVersion": null,
+      "browser": null,
+      "date": "2026-11",
+      "results": {
+        "vibrationApi": true,
+        "phoneVibrationSettingOff": {
+          "anyPulsePlays": false,
+          "vibrateReturned": true
+        },
+        "phoneVibrationSettingOn": {
+          "pulse18ms": "plays",
+          "pulse60ms": "plays",
+          "pulse400ms": "plays",
+          "pattern_80_60_80_60_80": "plays",
+          "pulse6ms": null,
+          "shorterThan18ms": null
+        },
+        "preferredTickMs": 18,
+        "preferredTickFeel": "crisp"
+      },
+      "notes": "Pulse-length round; the browser used was not recorded. The first rounds produced no vibration at all because vibration was switched off on the phone (silent-mode icon in the status bar), while navigator.vibrate still returned true. Every conclusion from before that was found is void: an early belief that 6 ms is too short to play was formed with vibration off and was never re-tested, so 6 ms is untested; pulses shorter than 18 ms were not re-tested with vibration on. With vibration on, 18 ms was judged the best per-step tick."
+    },
+    {
+      "model": "Huawei P50",
+      "os": "HarmonyOS",
+      "osVersion": null,
+      "browser": null,
+      "date": "2026-11",
+      "results": {
+        "vibrationApi": true,
+        "vibratePlays": "plays",
+        "crispClick": false,
+        "pulseLengthsTried": null,
+        "linearMotor": null,
+        "shippedTickMs": 18
+      },
+      "notes": "Vibration plays but does not feel like a crisp click at the lengths tried (the lengths are not listed in these notes). The tester assumes the phone lacks a linear motor; not checked against a spec sheet. A web page can set only the pulse length (no amplitude, no waveform), so there was nothing to tune beyond duration; left at 18 ms. Browser and OS version not recorded."
+    }
+  ]
+}
